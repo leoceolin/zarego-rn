@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "name": "zarego-challenge-rn",
+    "slug": "zarego-challenge-rn",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  },
+  "name": "zarego-challenge-rn"
+}
