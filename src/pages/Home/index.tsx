@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { Countries, Country } from '../../types/country'
-import { FlatList, Text, View } from 'react-native'
+import { ActivityIndicator, FlatList, Text, View } from 'react-native'
 import useFetchCountries from './useFetchCountries'
 import { Button, ButtonCountry, Container } from './styles'
 import { RootStackParamList } from '../../routes'
@@ -87,32 +87,37 @@ export function Home({ navigation }: HomeProps) {
   return (
     <Container>
       <Text style={{ fontSize: 40 }}>Choose Countries</Text>
-      <FlatList
-        style={{
-          flexGrow: 0,
-          maxHeight: '60%',
-          borderStyle: 'solid',
-          borderColor: 'black',
-        }}
-        data={allCountries}
-        keyExtractor={keyExtractor}
-        renderItem={({ item }) => (
-          <RenderCountry
-            countryId={item.id}
-            countryName={item.CountryName}
-            selected={item.selected}
-          />
-        )}
-        onEndReached={onReachEnd}
-        onEndReachedThreshold={0.5}
-        ListFooterComponent={() => (
-          <View
-            style={{
-              borderTopWidth: 1,
-            }}
-          />
-        )}
-      />
+      {isLoading ? (
+        <ActivityIndicator size="large" />
+      ) : (
+        <FlatList
+          style={{
+            flexGrow: 0,
+            maxHeight: '60%',
+            borderStyle: 'solid',
+            borderColor: 'black',
+          }}
+          data={allCountries}
+          keyExtractor={keyExtractor}
+          renderItem={({ item }) => (
+            <RenderCountry
+              countryId={item.id}
+              countryName={item.CountryName}
+              selected={item.selected}
+            />
+          )}
+          onEndReached={onReachEnd}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={() => (
+            <View
+              style={{
+                borderTopWidth: 1,
+              }}
+            />
+          )}
+        />
+      )}
+
       <Button>
         <Text
           style={{ fontSize: 25 }}
