@@ -15,8 +15,6 @@ interface IRenderCountry {
 type HomeProps = NativeStackScreenProps<RootStackParamList, 'Home'>
 
 export function Home({ navigation }: HomeProps) {
-  const [countryId, setCountryId] = useState('')
-  const [allCountries, setAllCountries] = useState<Countries[]>([])
   const [countriesSelected, setCountriesSelected] = useState<Countries[]>([])
 
   const { data, hasNextPage, isLoading, fetchNextPage } = useFetchCountries()
@@ -29,82 +27,55 @@ export function Home({ navigation }: HomeProps) {
     }
   }
 
-  const handleSelectCountry = (countryIdParam: string) => {
-    setCountryId(countryIdParam)
-    setAllCountries(
-      allCountries.map((item) =>
-        item.id === countryIdParam
-          ? { ...item, selected: !item.selected }
-          : item,
-      ),
+  const handleSelectCountry = (countryParam: Countries) => {
+    const checkIfCountryIsSelected = countriesSelected.some(
+      (elem) => elem.id === countryParam.id,
     )
+
+    if (checkIfCountryIsSelected) {
+      const filteredCountries = countriesSelected.filter(
+        (item) => item.id !== countryParam.id,
+      )
+
+      setCountriesSelected(filteredCountries)
+    } else {
+      const countryToAdd = [...new Set([...countriesSelected, countryParam])]
+      setCountriesSelected(countryToAdd)
+    }
   }
 
-  const countries = useMemo(() => {
-    return data?.pages.reduce((_, page) => {
-      return [...allCountries, ...page]
-    }, [])
-  }, [data])
-
-  useEffect(() => {
-    if (countries) {
-      setAllCountries(countries)
-    }
-  }, [countries])
-
-  useEffect(() => {
-    if (countryId) {
-      allCountries.forEach((item) => {
-        if (item.id === countryId && item.selected) {
-          const countryToAdd = [...new Set([...countriesSelected, item])]
-          setCountriesSelected(countryToAdd)
-        } else if (item.id === countryId) {
-          const countryToRemove = countriesSelected.filter(
-            (item) => item.id !== countryId,
-          )
-          setCountriesSelected(countryToRemove)
-        }
-      })
-    }
-  }, [allCountries, countryId])
-
-  const RenderCountry = ({
-    countryId,
-    countryName,
-    selected,
-  }: IRenderCountry) => (
-    <ButtonCountry
-      key={countryId}
-      selected={selected}
-      onPress={() => {
-        handleSelectCountry(countryId)
-      }}
-    >
-      <Text>{countryName}</Text>
-    </ButtonCountry>
-  )
+  const countries = data?.pages ? data?.pages?.flatMap((page) => [...page]) : []
 
   return (
     <Container>
       <Text style={{ fontSize: 40 }}>Choose Countries</Text>
       {isLoading ? (
-        <ActivityIndicator size="large" />
+        <View testID="loading">
+          <ActivityIndicator size="large" />
+        </View>
       ) : (
         <FlatList
+          testID="countriesList"
           style={{
             flexGrow: 0,
             maxHeight: '60%',
             borderStyle: 'solid',
             borderColor: 'black',
           }}
-          data={allCountries}
+          data={countries}
           keyExtractor={keyExtractor}
           renderItem={({ item }) => (
-            <RenderCountry
-              countryId={item.id}
-              countryName={item.CountryName}
+            <ButtonCountry
+              testID="countryItemList"
+              key={item.id}
               selected={item.selected}
-            />
+              onPress={() => {
+                handleSelectCountry(item)
+                item.selected = !item.selected
+              }}
+            >
+              <Text>{item.CountryName}</Text>
+            </ButtonCountry>
           )}
           onEndReached={onReachEnd}
           onEndReachedThreshold={0.5}
@@ -118,7 +89,7 @@ export function Home({ navigation }: HomeProps) {
         />
       )}
 
-      <Button>
+      <Button testID="buttonSeeData">
         <Text
           style={{ fontSize: 25 }}
           onPress={() =>

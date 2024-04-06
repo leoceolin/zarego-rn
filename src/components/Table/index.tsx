@@ -50,6 +50,7 @@ export const TableComponent = ({ countriesSelected }: ITable) => {
     <View>
       {countries && countriesSelected && (
         <DataTable
+          testID="tableContainer"
           style={{
             borderColor: '#000',
           }}
@@ -59,6 +60,7 @@ export const TableComponent = ({ countriesSelected }: ITable) => {
             {countries.slice(from, to).map((country) => {
               return (
                 <DataTable.Title
+                  testID="tableHeaderTitle"
                   key={country}
                   textStyle={{
                     color: '#fff',
@@ -73,6 +75,7 @@ export const TableComponent = ({ countriesSelected }: ITable) => {
             {TABLE_HEAD.map((el) => {
               return (
                 <DataTable.Row
+                  testID="tableRow"
                   key={el.field}
                   style={{
                     borderColor: '#000',
